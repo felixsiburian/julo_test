@@ -11,17 +11,16 @@ type (
 		CreatedAt time.Time  `json:"created_at"`
 		UpdatedAt time.Time  `json:"updated_at"`
 		DeletedAt *time.Time `json:"deleted_at"`
-		Token     string     `json:"token"`
 	}
 
 	Wallet struct {
-		ID        uuid.UUID  `json:"id"`
-		OwnedBy   uuid.UUID  `json:"owned_by"`
-		Status    string     `json:"status"`
-		EnabledAt *time.Time `json:"enabled_at"`
-		Balance   float64    `json:"balance"`
-		CreatedAt time.Time  `json:"created_at"`
-		UpdatedAt time.Time  `json:"updated_at"`
-		DeletedAt *time.Time `json:"deleted_at"`
+		ID        uuid.UUID  `gorm:"id" json:"id"`
+		OwnedBy   uuid.UUID  `gorm:"owned_by" json:"owned_by"`
+		Status    string     `gorm:"status" json:"status"`
+		EnabledAt *time.Time `gorm:"enabled_at" json:"enabled_at"`
+		Balance   float64    `gorm:"balance" json:"balance"`
+		CreatedAt time.Time  `gorm:"created_at" json:"created_at"`
+		UpdatedAt time.Time  `gorm:"updated_at" json:"updated_at"`
+		DeletedAt *time.Time `gorm:"deleted_at" json:"deleted_at"`
 	}
 )

@@ -5,11 +5,13 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"io"
+	"strings"
 )
 
-var key = []byte("asfvasfad;qlem1;m;lasmdas;lvasaa")
+var key = []byte("your-secret-key-32chars-here!!!!")
 
 func Encrypt(data string) (string, error) {
 	block, err := aes.NewCipher(key)
@@ -59,4 +61,15 @@ func Decrypt(encrypted string) (string, error) {
 	}
 
 	return string(plaintext), nil
+}
+
+func PartitionToken(token string) (string, error) {
+	tokenHeader := strings.Split(token, " ")
+
+	if len(tokenHeader) != 2 || strings.ToLower(tokenHeader[0]) != "token" {
+		err := errors.New("invalid Token")
+		return "", err
+	}
+
+	return tokenHeader[1], nil
 }

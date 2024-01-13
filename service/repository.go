@@ -16,4 +16,6 @@ type ITransactionRepository interface {
 type IWalletRepository interface {
 	Create(ownedBy uuid.UUID) (uuid.UUID, error)
 	FindWalletByOwnerID(ownerID uuid.UUID) (res model.Wallet, err error)
+	FindWalletByWalletID(walletId uuid.UUID) (res model.Wallet, err error)
+	EnableWallet(walletId uuid.UUID) (res model.Wallet, err error)
 }

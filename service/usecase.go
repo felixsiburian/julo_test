@@ -7,8 +7,6 @@ import (
 )
 
 type AccountUsecase interface {
-	Create() error
-	FindByID(id string) (res model.Account, err error)
 }
 
 type TransactionUsecase interface {
@@ -16,4 +14,6 @@ type TransactionUsecase interface {
 
 type WalletUsecase interface {
 	InitWallet(accountId uuid.UUID) (res response.SuccessInitWallet, err error)
+	EnableWallet(token string) (res response.SuccessEnableWallet, err error)
+	FindWalletByWalletID(walletId string) (res model.Wallet, err error)
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
 	"julo_test/service"
+	"julo_test/service/model"
 	"julo_test/service/model/response"
 	"julo_test/service/tools"
 )
@@ -49,6 +50,7 @@ func (w walletUsecase) InitWallet(accountId uuid.UUID) (res response.SuccessInit
 		if err != nil {
 			return
 		}
+
 	} else {
 		err = errors.New("Already have a wallet")
 		return
@@ -63,4 +65,34 @@ func (w walletUsecase) InitWallet(accountId uuid.UUID) (res response.SuccessInit
 	res.Status = "success"
 
 	return res, nil
+}
+
+func (w walletUsecase) EnableWallet(walletId string) (res response.SuccessEnableWallet, err error) {
+	walletUUID, err := uuid.Parse(walletId)
+	if err != nil {
+		return
+	}
+
+	walletRes, err := w.walletRepo.EnableWallet(walletUUID)
+	if err != nil {
+		return
+	}
+
+	res.Data.Wallet.ID = walletRes.ID
+	res.Data.Wallet.Status = walletRes.Status
+	res.Data.Wallet.OwnedBy = walletRes.OwnedBy
+	res.Data.Wallet.EnabledAt = walletRes.EnabledAt
+	res.Data.Wallet.Balance = walletRes.Balance
+	res.Status = "success"
+
+	return res, nil
+}
+
+func (w walletUsecase) FindWalletByWalletID(walletId string) (res model.Wallet, err error) {
+	walletIdParse, err := uuid.Parse(walletId)
+	if err != nil {
+		return
+	}
+
+	return w.walletRepo.FindWalletByWalletID(walletIdParse)
 }

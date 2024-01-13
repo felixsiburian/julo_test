@@ -4,7 +4,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo"
 	"julo_test/service"
+	"julo_test/service/model/response"
+	"julo_test/service/tools"
 	"net/http"
+	"strings"
 )
 
 type WalletHandler struct {
@@ -43,4 +46,58 @@ func (h *WalletHandler) InitWallet(e echo.Context) error {
 	}
 
 	return e.JSON(http.StatusOK, res)
+}
+
+func (h *WalletHandler) EnableWallet(e echo.Context) error {
+	tokenHeader := e.Request().Header.Get("Authorization")
+	if tokenHeader == "" {
+		return e.JSON(http.StatusUnauthorized, map[string]interface{}{
+			"status":  "failed",
+			"message": "invalid token",
+		})
+	}
+
+	token, err := tools.PartitionToken(tokenHeader)
+	if err != nil {
+		return e.JSON(http.StatusUnauthorized, map[string]interface{}{
+			"status":  "failed",
+			"message": err,
+		})
+	}
+
+	walletId, err := tools.Decrypt(token)
+	if err != nil {
+		return e.JSON(http.StatusUnauthorized, map[string]interface{}{
+			"status":  "failed",
+			"message": err,
+		})
+	}
+
+	walletData, err := h.walletUsecase.FindWalletByWalletID(walletId)
+	if err != nil {
+		return e.JSON(http.StatusUnauthorized, map[string]interface{}{
+			"status":  "failed",
+			"message": err,
+		})
+	}
+
+	if strings.ToLower(walletData.Status) != "enabled" {
+		res, err := h.walletUsecase.EnableWallet(walletId)
+		if err != nil {
+			return e.JSON(http.StatusUnauthorized, map[string]interface{}{
+				"status":  "failed",
+				"message": err,
+			})
+		}
+
+		return e.JSON(http.StatusOK, res)
+	} else {
+		res := response.FailedEnableWallet{
+			Status: "failed",
+			Data: response.DataFailedEnableWallet{
+				Error: "Already enabled",
+			},
+		}
+		return e.JSON(http.StatusBadRequest, res)
+	}
 }

@@ -30,8 +30,7 @@ func (r WalletRepository) Create(ownedBy uuid.UUID) (uuid.UUID, error) {
 		DeletedAt: nil,
 	}
 
-	err := r.db.Debug().Table("wallet").Create(&wallet).Error
-	if err != nil {
+	if err := r.db.Debug().Table("wallet").Create(&wallet).Error; err != nil {
 		return uuid.Nil, err
 	}
 
@@ -39,9 +38,31 @@ func (r WalletRepository) Create(ownedBy uuid.UUID) (uuid.UUID, error) {
 }
 
 func (r WalletRepository) FindWalletByOwnerID(ownerID uuid.UUID) (res model.Wallet, err error) {
-	err = r.db.Debug().Table("wallet").Where("owned_by = ?", ownerID.String()).Find(&res).Error
-	if err != nil {
+	if err = r.db.Debug().Table("wallet").Where("owned_by = ?", ownerID.String()).Find(&res).Error; err != nil {
 		return
+	}
+
+	return res, nil
+}
+
+func (r WalletRepository) FindWalletByWalletID(walletId uuid.UUID) (res model.Wallet, err error) {
+	if err = r.db.Debug().Table("wallet").Where("id = ?", walletId.String()).Find(&res).Error; err != nil {
+		return
+	}
+
+	return res, nil
+}
+
+func (r WalletRepository) EnableWallet(walletId uuid.UUID) (res model.Wallet, err error) {
+	if err = r.db.Debug().Table("wallet").Updates(map[string]interface{}{
+		"status":     "enabled",
+		"enabled_at": time.Now(),
+	}).Where("id = ?", walletId).Error; err != nil {
+		return res, err
+	}
+
+	if err = r.db.Debug().Table("wallet").Select("id, owned_by, status, enabled_at, balance").Where("id = ?", walletId).Find(&res).Error; err != nil {
+		return res, err
 	}
 
 	return res, nil
