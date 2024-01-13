@@ -81,7 +81,7 @@ func (h *WalletHandler) EnableWallet(e echo.Context) error {
 		})
 	}
 
-	if strings.ToLower(walletData.Status) != "enabled" {
+	if strings.ToLower(walletData.Data.Wallet.Status) != "enabled" {
 		res, err := h.walletUsecase.EnableWallet(walletId)
 		if err != nil {
 			return e.JSON(http.StatusUnauthorized, map[string]interface{}{
@@ -100,4 +100,41 @@ func (h *WalletHandler) EnableWallet(e echo.Context) error {
 		}
 		return e.JSON(http.StatusBadRequest, res)
 	}
+}
+
+func (h *WalletHandler) ViewWallet(e echo.Context) error {
+	tokenHeader := e.Request().Header.Get("Authorization")
+	if tokenHeader == "" {
+		return e.JSON(http.StatusUnauthorized, map[string]interface{}{
+			"status":  "failed",
+			"message": "invalid token",
+		})
+	}
+
+	token, err := tools.PartitionToken(tokenHeader)
+	if err != nil {
+		return e.JSON(http.StatusUnauthorized, map[string]interface{}{
+			"status":  "failed",
+			"message": err,
+		})
+	}
+
+	walletId, err := tools.Decrypt(token)
+	if err != nil {
+		return e.JSON(http.StatusUnauthorized, map[string]interface{}{
+			"status":  "failed",
+			"message": err,
+		})
+	}
+
+	walletData, err := h.walletUsecase.FindWalletByWalletID(walletId)
+	if err != nil {
+		return e.JSON(http.StatusUnauthorized, map[string]interface{}{
+			"status":  "failed",
+			"message": err,
+		})
+	}
+	walletData.Status = "success"
+
+	return e.JSON(http.StatusOK, walletData)
 }

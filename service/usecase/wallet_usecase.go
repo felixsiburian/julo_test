@@ -5,7 +5,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
 	"julo_test/service"
-	"julo_test/service/model"
 	"julo_test/service/model/response"
 	"julo_test/service/tools"
 )
@@ -88,11 +87,18 @@ func (w walletUsecase) EnableWallet(walletId string) (res response.SuccessEnable
 	return res, nil
 }
 
-func (w walletUsecase) FindWalletByWalletID(walletId string) (res model.Wallet, err error) {
+func (w walletUsecase) FindWalletByWalletID(walletId string) (res response.SuccessEnableWallet, err error) {
 	walletIdParse, err := uuid.Parse(walletId)
 	if err != nil {
 		return
 	}
 
-	return w.walletRepo.FindWalletByWalletID(walletIdParse)
+	walletData, err := w.walletRepo.FindWalletByWalletID(walletIdParse)
+	if err != nil {
+		return
+	}
+
+	res.Data.Wallet = walletData
+
+	return
 }
