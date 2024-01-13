@@ -1,33 +1,29 @@
 package handler
 
 import (
+	"github.com/google/uuid"
 	"github.com/labstack/echo"
 	"julo_test/service"
 	"net/http"
 )
 
-type AccountHandler struct {
-	e              *echo.Echo
-	accountUsecase service.AccountUsecase
+type WalletHandler struct {
+	e             *echo.Echo
+	walletUsecase service.WalletUsecase
 }
 
-func NewAccountHandler(
+func NewWalletHandler(
 	e *echo.Echo,
-	accountUsecase service.AccountUsecase,
-) *AccountHandler {
-	return &AccountHandler{
-		e:              e,
-		accountUsecase: accountUsecase,
+	walletUsecase service.WalletUsecase,
+) *WalletHandler {
+	return &WalletHandler{
+		e:             e,
+		walletUsecase: walletUsecase,
 	}
 }
 
-func (h *AccountHandler) Create(e echo.Context) error {
-	return h.accountUsecase.Create()
-}
-
-func (h *AccountHandler) FindByID(e echo.Context) error {
+func (h *WalletHandler) InitWallet(e echo.Context) error {
 	id := e.FormValue("customer_xid")
-
 	if id == "" {
 		resMap := make(map[string]interface{})
 		errorMap := make(map[string]interface{})
@@ -40,9 +36,10 @@ func (h *AccountHandler) FindByID(e echo.Context) error {
 		return e.JSON(http.StatusBadRequest, res)
 	}
 
-	res, err := h.accountUsecase.FindByID(id)
+	parseID := uuid.MustParse(id)
+	res, err := h.walletUsecase.InitWallet(parseID)
 	if err != nil {
-		return err
+		return e.JSON(http.StatusInternalServerError, err)
 	}
 
 	return e.JSON(http.StatusOK, res)

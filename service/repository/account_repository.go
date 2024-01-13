@@ -18,12 +18,11 @@ func NewServiceCenterRepository(db *gorm.DB) service.IAccountRepository {
 	}
 }
 
-func (r AccountRepository) Create() error {
+func (r AccountRepository) Create(id uuid.UUID) error {
 	account := model.Account{
-		ID:        uuid.New(),
+		ID:        id,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
-		DeletedAt: time.Time{},
 	}
 
 	err := r.db.Debug().Table("account").Create(&account).Error
@@ -32,4 +31,13 @@ func (r AccountRepository) Create() error {
 	}
 
 	return nil
+}
+
+func (r AccountRepository) FindByID(id string) (res model.Account, err error) {
+	err = r.db.Debug().Table("account").Where("id = ?", id).Find(&res).Error
+	if err != nil && !gorm.IsRecordNotFoundError(err) {
+		return res, err
+	}
+
+	return res, nil
 }
