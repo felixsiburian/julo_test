@@ -21,4 +21,5 @@ type IWalletRepository interface {
 	FindWalletByOwnerID(ownerID uuid.UUID) (res model.Wallet, err error)
 	FindWalletByWalletID(walletId uuid.UUID) (res model.Wallet, err error)
 	EnableWallet(walletId uuid.UUID) (res model.Wallet, err error)
+	UpdateWallet(amount float64) error
 }

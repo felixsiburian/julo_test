@@ -67,3 +67,13 @@ func (r WalletRepository) EnableWallet(walletId uuid.UUID) (res model.Wallet, er
 
 	return res, nil
 }
+
+func (r WalletRepository) UpdateWallet(amount float64) error {
+	if err := r.db.Debug().Table("wallet").Updates(map[string]interface{}{
+		"balance": amount,
+	}).Error; err != nil {
+		return err
+	}
+
+	return nil
+}

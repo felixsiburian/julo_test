@@ -2,25 +2,31 @@ package usecase
 
 import (
 	"errors"
+	"fmt"
 	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
 	"julo_test/service"
+	"julo_test/service/model/request"
 	"julo_test/service/model/response"
 	"julo_test/service/tools"
+	"time"
 )
 
 type walletUsecase struct {
-	walletRepo  service.IWalletRepository
-	accountRepo service.IAccountRepository
+	walletRepo      service.IWalletRepository
+	accountRepo     service.IAccountRepository
+	transactionRepo service.ITransactionRepository
 }
 
 func NewWalletUsecase(
 	walletRepo service.IWalletRepository,
 	accountRepo service.IAccountRepository,
+	transactionRepo service.ITransactionRepository,
 ) service.WalletUsecase {
 	return walletUsecase{
-		walletRepo:  walletRepo,
-		accountRepo: accountRepo,
+		walletRepo:      walletRepo,
+		accountRepo:     accountRepo,
+		transactionRepo: transactionRepo,
 	}
 }
 
@@ -101,4 +107,30 @@ func (w walletUsecase) FindWalletByWalletID(walletId string) (res response.Succe
 	res.Data.Wallet = walletData
 
 	return
+}
+
+func (w walletUsecase) Deposit(params request.UpdateWalletRequest) (res response.DataSuccessUpdateWallet, err error) {
+	fmt.Println("params: ", params)
+	if err = w.walletRepo.UpdateWallet(params.Amount); err != nil {
+		return res, err
+	}
+
+	if err = w.transactionRepo.CreateTransactions(request.CreateTransactionRequest{
+		Status:          "success",
+		TransactionType: params.Type,
+		Amount:          params.AmountAdded,
+		RefId:           params.RefId.String(),
+		WalletId:        params.WalletId,
+	}); err != nil {
+		return res, err
+	}
+
+	res.Deposit.DepositedAt = time.Now()
+	res.Deposit.DepositedBy = params.DepositBy
+	res.Deposit.ID = uuid.New()
+	res.Deposit.Amount = params.Amount
+	res.Deposit.Status = "success"
+	res.Deposit.ReferenceId = params.RefId
+
+	return res, err
 }

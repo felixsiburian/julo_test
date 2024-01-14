@@ -31,12 +31,11 @@ func start() {
 	transactionRepo := repository.NewTransactionRepository(dbConn)
 
 	//	register usecase
-	walletUsecase := usecase.NewWalletUsecase(walletRepo, accountRepo)
+	walletUsecase := usecase.NewWalletUsecase(walletRepo, accountRepo, transactionRepo)
 	transactionUsecase := usecase.NewTransactionUsecase(transactionRepo)
 
 	delivery.NewRouter(e, walletUsecase, transactionUsecase)
 
 	log.Println("service running on port: ", os.Getenv("APP_PORT"))
 	e.Logger.Fatal(e.Start(fmt.Sprintf("%s:%s", os.Getenv("APP_HOST"), os.Getenv("APP_PORT"))))
-
 }

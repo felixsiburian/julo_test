@@ -4,9 +4,11 @@ import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo"
 	"julo_test/service"
+	"julo_test/service/model/request"
 	"julo_test/service/model/response"
 	"julo_test/service/tools"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -137,4 +139,73 @@ func (h *WalletHandler) ViewWallet(e echo.Context) error {
 	walletData.Status = "success"
 
 	return e.JSON(http.StatusOK, walletData)
+}
+
+func (h *WalletHandler) Deposit(e echo.Context) error {
+	tokenHeader := e.Request().Header.Get("Authorization")
+	if tokenHeader == "" {
+		return e.JSON(http.StatusUnauthorized, map[string]interface{}{
+			"status":  "failed",
+			"message": "invalid token",
+		})
+	}
+
+	refId := e.FormValue("reference_id")
+	if refId == "" {
+		return e.JSON(http.StatusUnauthorized, map[string]interface{}{
+			"status":  "failed",
+			"message": "invalid refId",
+		})
+	}
+
+	amount := e.FormValue("amount")
+	if amount == "" {
+		return e.JSON(http.StatusUnauthorized, map[string]interface{}{
+			"status":  "failed",
+			"message": "invalid amount",
+		})
+	}
+
+	amountFloat, _ := strconv.ParseFloat(amount, 10)
+
+	token, err := tools.PartitionToken(tokenHeader)
+	if err != nil {
+		return e.JSON(http.StatusUnauthorized, map[string]interface{}{
+			"status":  "failed",
+			"message": err,
+		})
+	}
+
+	walletId, err := tools.Decrypt(token)
+	if err != nil {
+		return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"status":  "failed",
+			"message": err,
+		})
+	}
+
+	walletData, err := h.walletUsecase.FindWalletByWalletID(walletId)
+	if err != nil {
+		return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"status":  "failed",
+			"message": err,
+		})
+	}
+
+	convertWalletId := uuid.MustParse(walletId)
+	convertRefId := uuid.MustParse(refId)
+
+	finalAmount := walletData.Data.Wallet.Balance + amountFloat
+
+	res, err := h.walletUsecase.Deposit(request.UpdateWalletRequest{
+		WalletId:    convertWalletId,
+		Amount:      finalAmount,
+		AmountAdded: amountFloat,
+		Type:        "deposit",
+		RefId:       convertRefId,
+		DepositBy:   walletData.Data.Wallet.OwnedBy,
+	})
+	res.Deposit.Amount = amountFloat
+
+	return e.JSON(http.StatusOK, res)
 }

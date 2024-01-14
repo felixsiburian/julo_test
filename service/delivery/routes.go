@@ -20,6 +20,7 @@ func NewRouter(
 	rr.POST("/init", w.InitWallet)
 	wc.POST("", w.EnableWallet)
 	wc.GET("", w.ViewWallet)
+	wc.POST("/deposits", w.Deposit)
 
 	wc.GET("/transactions", trx.ViewWalletTransaction)
 }

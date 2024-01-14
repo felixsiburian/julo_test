@@ -26,6 +26,7 @@ type (
 
 	Transaction struct {
 		ID           uuid.UUID `gorm:"id" json:"id"`
+		WalletId     uuid.UUID `json:"wallet_id"`
 		Status       string    `json:"status"`
 		TransactedAt time.Time `json:"transacted_at"`
 		Type         string    `json:"type"`
