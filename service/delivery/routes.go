@@ -21,6 +21,7 @@ func NewRouter(
 	wc.POST("", w.EnableWallet)
 	wc.GET("", w.ViewWallet)
 	wc.POST("/deposits", w.Deposit)
+	wc.POST("/withdrawals", w.Withdraw)
 
 	wc.GET("/transactions", trx.ViewWalletTransaction)
 }

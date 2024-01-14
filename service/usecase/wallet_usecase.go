@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"errors"
-	"fmt"
 	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
 	"julo_test/service"
@@ -109,8 +108,7 @@ func (w walletUsecase) FindWalletByWalletID(walletId string) (res response.Succe
 	return
 }
 
-func (w walletUsecase) Deposit(params request.UpdateWalletRequest) (res response.DataSuccessUpdateWallet, err error) {
-	fmt.Println("params: ", params)
+func (w walletUsecase) UpdateBalance(params request.UpdateWalletRequest) (res response.DataSuccessUpdateWallet, err error) {
 	if err = w.walletRepo.UpdateWallet(params.Amount); err != nil {
 		return res, err
 	}

@@ -197,11 +197,87 @@ func (h *WalletHandler) Deposit(e echo.Context) error {
 
 	finalAmount := walletData.Data.Wallet.Balance + amountFloat
 
-	res, err := h.walletUsecase.Deposit(request.UpdateWalletRequest{
+	res, err := h.walletUsecase.UpdateBalance(request.UpdateWalletRequest{
 		WalletId:    convertWalletId,
 		Amount:      finalAmount,
 		AmountAdded: amountFloat,
 		Type:        "deposit",
+		RefId:       convertRefId,
+		DepositBy:   walletData.Data.Wallet.OwnedBy,
+	})
+	res.Deposit.Amount = amountFloat
+
+	return e.JSON(http.StatusOK, res)
+}
+
+func (h *WalletHandler) Withdraw(e echo.Context) error {
+	tokenHeader := e.Request().Header.Get("Authorization")
+	if tokenHeader == "" {
+		return e.JSON(http.StatusUnauthorized, map[string]interface{}{
+			"status":  "failed",
+			"message": "invalid token",
+		})
+	}
+
+	refId := e.FormValue("reference_id")
+	if refId == "" {
+		return e.JSON(http.StatusUnauthorized, map[string]interface{}{
+			"status":  "failed",
+			"message": "invalid refId",
+		})
+	}
+
+	amount := e.FormValue("amount")
+	if amount == "" {
+		return e.JSON(http.StatusUnauthorized, map[string]interface{}{
+			"status":  "failed",
+			"message": "invalid amount",
+		})
+	}
+
+	amountFloat, _ := strconv.ParseFloat(amount, 10)
+
+	token, err := tools.PartitionToken(tokenHeader)
+	if err != nil {
+		return e.JSON(http.StatusUnauthorized, map[string]interface{}{
+			"status":  "failed",
+			"message": err,
+		})
+	}
+
+	walletId, err := tools.Decrypt(token)
+	if err != nil {
+		return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"status":  "failed",
+			"message": err,
+		})
+	}
+
+	walletData, err := h.walletUsecase.FindWalletByWalletID(walletId)
+	if err != nil {
+		return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"status":  "failed",
+			"message": err,
+		})
+	}
+
+	convertWalletId := uuid.MustParse(walletId)
+	convertRefId := uuid.MustParse(refId)
+
+	if walletData.Data.Wallet.Balance < amountFloat {
+		return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"status":  "failed",
+			"message": "invalid balance",
+		})
+	}
+
+	finalAmount := walletData.Data.Wallet.Balance - amountFloat
+
+	res, err := h.walletUsecase.UpdateBalance(request.UpdateWalletRequest{
+		WalletId:    convertWalletId,
+		Amount:      finalAmount,
+		AmountAdded: amountFloat,
+		Type:        "withdraw",
 		RefId:       convertRefId,
 		DepositBy:   walletData.Data.Wallet.OwnedBy,
 	})

@@ -79,6 +79,7 @@ func (h *TransactionHandler) ViewWalletTransaction(e echo.Context) error {
 			"message": err,
 		})
 	}
+	res.Status = "success"
 
 	return e.JSON(http.StatusOK, res)
 }
