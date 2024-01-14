@@ -8,10 +8,11 @@ import (
 
 func NewRouter(
 	e *echo.Echo,
-	accountUsecase service.AccountUsecase,
 	walletUsecase service.WalletUsecase,
+	transactionUsecase service.TransactionUsecase,
 ) {
 	w := handler.NewWalletHandler(e, walletUsecase)
+	trx := handler.NewTransactionHandler(e, transactionUsecase, walletUsecase)
 
 	rr := e.Group("/api/v1")
 	wc := rr.Group("/wallet")
@@ -19,4 +20,6 @@ func NewRouter(
 	rr.POST("/init", w.InitWallet)
 	wc.POST("", w.EnableWallet)
 	wc.GET("", w.ViewWallet)
+
+	wc.GET("/transactions", trx.ViewWalletTransaction)
 }

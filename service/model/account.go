@@ -23,4 +23,13 @@ type (
 		UpdatedAt time.Time  `gorm:"updated_at" json:"updated_at"`
 		DeletedAt *time.Time `gorm:"deleted_at" json:"deleted_at"`
 	}
+
+	Transaction struct {
+		ID           uuid.UUID `gorm:"id" json:"id"`
+		Status       string    `json:"status"`
+		TransactedAt time.Time `json:"transacted_at"`
+		Type         string    `json:"type"`
+		Amount       float64   `json:"amount"`
+		ReferenceId  uuid.UUID `json:"reference_id"`
+	}
 )

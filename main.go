@@ -28,12 +28,13 @@ func start() {
 	//	register repository
 	accountRepo := repository.NewServiceCenterRepository(dbConn)
 	walletRepo := repository.NewWalletRepository(dbConn)
+	transactionRepo := repository.NewTransactionRepository(dbConn)
 
 	//	register usecase
-	accountUsecase := usecase.NewAccountUsecase(accountRepo)
 	walletUsecase := usecase.NewWalletUsecase(walletRepo, accountRepo)
+	transactionUsecase := usecase.NewTransactionUsecase(transactionRepo)
 
-	delivery.NewRouter(e, accountUsecase, walletUsecase)
+	delivery.NewRouter(e, walletUsecase, transactionUsecase)
 
 	log.Println("service running on port: ", os.Getenv("APP_PORT"))
 	e.Logger.Fatal(e.Start(fmt.Sprintf("%s:%s", os.Getenv("APP_HOST"), os.Getenv("APP_PORT"))))

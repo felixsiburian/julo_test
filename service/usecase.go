@@ -9,6 +9,7 @@ type AccountUsecase interface {
 }
 
 type TransactionUsecase interface {
+	FindTransactionByWalletId(walletId string) (res response.SuccessFindTransactionByWalletId, err error)
 }
 
 type WalletUsecase interface {

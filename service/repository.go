@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/google/uuid"
 	"julo_test/service/model"
+	"julo_test/service/model/request"
 )
 
 type IAccountRepository interface {
@@ -11,6 +12,8 @@ type IAccountRepository interface {
 }
 
 type ITransactionRepository interface {
+	FindTxByWalletId(walletId string) (res []model.Transaction, err error)
+	CreateTransactions(params request.CreateTransactionRequest) error
 }
 
 type IWalletRepository interface {

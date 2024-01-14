@@ -75,7 +75,7 @@ func (h *WalletHandler) EnableWallet(e echo.Context) error {
 
 	walletData, err := h.walletUsecase.FindWalletByWalletID(walletId)
 	if err != nil {
-		return e.JSON(http.StatusUnauthorized, map[string]interface{}{
+		return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 			"status":  "failed",
 			"message": err,
 		})
@@ -84,7 +84,7 @@ func (h *WalletHandler) EnableWallet(e echo.Context) error {
 	if strings.ToLower(walletData.Data.Wallet.Status) != "enabled" {
 		res, err := h.walletUsecase.EnableWallet(walletId)
 		if err != nil {
-			return e.JSON(http.StatusUnauthorized, map[string]interface{}{
+			return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 				"status":  "failed",
 				"message": err,
 			})
@@ -121,7 +121,7 @@ func (h *WalletHandler) ViewWallet(e echo.Context) error {
 
 	walletId, err := tools.Decrypt(token)
 	if err != nil {
-		return e.JSON(http.StatusUnauthorized, map[string]interface{}{
+		return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 			"status":  "failed",
 			"message": err,
 		})
@@ -129,7 +129,7 @@ func (h *WalletHandler) ViewWallet(e echo.Context) error {
 
 	walletData, err := h.walletUsecase.FindWalletByWalletID(walletId)
 	if err != nil {
-		return e.JSON(http.StatusUnauthorized, map[string]interface{}{
+		return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 			"status":  "failed",
 			"message": err,
 		})

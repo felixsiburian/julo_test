@@ -20,4 +20,13 @@ type (
 	DataSuccessEnableWallet struct {
 		Wallet model.Wallet `json:"wallet"`
 	}
+
+	SuccessFindTransactionByWalletId struct {
+		Status string                         `json:"status"`
+		Data   DataFindTransactionsByWalletId `json:"data"`
+	}
+
+	DataFindTransactionsByWalletId struct {
+		Transactions []model.Transaction `json:"transactions"`
+	}
 )
