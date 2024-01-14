@@ -92,6 +92,27 @@ func (w walletUsecase) EnableWallet(walletId string) (res response.SuccessEnable
 	return res, nil
 }
 
+func (w walletUsecase) DisableWallet(walletId string) (res response.SuccessEnableWallet, err error) {
+	walletUUID, err := uuid.Parse(walletId)
+	if err != nil {
+		return
+	}
+
+	walletRes, err := w.walletRepo.DisableWallet(walletUUID)
+	if err != nil {
+		return
+	}
+
+	res.Data.Wallet.ID = walletRes.ID
+	res.Data.Wallet.Status = walletRes.Status
+	res.Data.Wallet.OwnedBy = walletRes.OwnedBy
+	res.Data.Wallet.EnabledAt = walletRes.EnabledAt
+	res.Data.Wallet.Balance = walletRes.Balance
+	res.Status = "success"
+
+	return res, nil
+}
+
 func (w walletUsecase) FindWalletByWalletID(walletId string) (res response.SuccessEnableWallet, err error) {
 	walletIdParse, err := uuid.Parse(walletId)
 	if err != nil {

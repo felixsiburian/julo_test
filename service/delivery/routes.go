@@ -19,6 +19,7 @@ func NewRouter(
 
 	rr.POST("/init", w.InitWallet)
 	wc.POST("", w.EnableWallet)
+	wc.PATCH("", w.DisableWallet)
 	wc.GET("", w.ViewWallet)
 	wc.POST("/deposits", w.Deposit)
 	wc.POST("/withdrawals", w.Withdraw)

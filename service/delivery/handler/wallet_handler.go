@@ -104,6 +104,42 @@ func (h *WalletHandler) EnableWallet(e echo.Context) error {
 	}
 }
 
+func (h *WalletHandler) DisableWallet(e echo.Context) error {
+	tokenHeader := e.Request().Header.Get("Authorization")
+	if tokenHeader == "" {
+		return e.JSON(http.StatusUnauthorized, map[string]interface{}{
+			"status":  "failed",
+			"message": "invalid token",
+		})
+	}
+
+	token, err := tools.PartitionToken(tokenHeader)
+	if err != nil {
+		return e.JSON(http.StatusUnauthorized, map[string]interface{}{
+			"status":  "failed",
+			"message": err,
+		})
+	}
+
+	walletId, err := tools.Decrypt(token)
+	if err != nil {
+		return e.JSON(http.StatusUnauthorized, map[string]interface{}{
+			"status":  "failed",
+			"message": err,
+		})
+	}
+
+	res, err := h.walletUsecase.DisableWallet(walletId)
+	if err != nil {
+		return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"status":  "failed",
+			"message": err,
+		})
+	}
+
+	return e.JSON(http.StatusOK, res)
+}
+
 func (h *WalletHandler) ViewWallet(e echo.Context) error {
 	tokenHeader := e.Request().Header.Get("Authorization")
 	if tokenHeader == "" {
@@ -138,6 +174,18 @@ func (h *WalletHandler) ViewWallet(e echo.Context) error {
 	}
 	walletData.Status = "success"
 
+	if walletData.Data.Wallet.Status != "enabled" {
+		errorsData := response.FailedEnableWallet{
+			Status: "failed",
+			Data: response.DataFailedEnableWallet{
+				Error: "Wallet disabled",
+			},
+		}
+		return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"status":  "failed",
+			"message": errorsData,
+		})
+	}
 	return e.JSON(http.StatusOK, walletData)
 }
 
@@ -189,6 +237,19 @@ func (h *WalletHandler) Deposit(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 			"status":  "failed",
 			"message": err,
+		})
+	}
+
+	if walletData.Data.Wallet.Status != "enabled" {
+		errorsData := response.FailedEnableWallet{
+			Status: "failed",
+			Data: response.DataFailedEnableWallet{
+				Error: "Wallet disabled",
+			},
+		}
+		return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"status":  "failed",
+			"message": errorsData,
 		})
 	}
 
@@ -258,6 +319,19 @@ func (h *WalletHandler) Withdraw(e echo.Context) error {
 		return e.JSON(http.StatusInternalServerError, map[string]interface{}{
 			"status":  "failed",
 			"message": err,
+		})
+	}
+
+	if walletData.Data.Wallet.Status != "enabled" {
+		errorsData := response.FailedEnableWallet{
+			Status: "failed",
+			Data: response.DataFailedEnableWallet{
+				Error: "Wallet disabled",
+			},
+		}
+		return e.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"status":  "failed",
+			"message": errorsData,
 		})
 	}
 

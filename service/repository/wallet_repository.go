@@ -20,14 +20,15 @@ func NewWalletRepository(db *gorm.DB) service.IWalletRepository {
 
 func (r WalletRepository) Create(ownedBy uuid.UUID) (uuid.UUID, error) {
 	wallet := model.Wallet{
-		ID:        uuid.New(),
-		OwnedBy:   ownedBy,
-		Status:    "disabled",
-		EnabledAt: &time.Time{},
-		Balance:   0,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-		DeletedAt: nil,
+		ID:         uuid.New(),
+		OwnedBy:    ownedBy,
+		Status:     "disabled",
+		EnabledAt:  &time.Time{},
+		Balance:    0,
+		CreatedAt:  time.Now(),
+		UpdatedAt:  time.Now(),
+		DeletedAt:  nil,
+		DisabledAt: nil,
 	}
 
 	if err := r.db.Debug().Table("wallet").Create(&wallet).Error; err != nil {
@@ -57,6 +58,21 @@ func (r WalletRepository) EnableWallet(walletId uuid.UUID) (res model.Wallet, er
 	if err = r.db.Debug().Table("wallet").Updates(map[string]interface{}{
 		"status":     "enabled",
 		"enabled_at": time.Now(),
+	}).Where("id = ?", walletId).Error; err != nil {
+		return res, err
+	}
+
+	if err = r.db.Debug().Table("wallet").Select("id, owned_by, status, enabled_at, balance").Where("id = ?", walletId).Find(&res).Error; err != nil {
+		return res, err
+	}
+
+	return res, nil
+}
+
+func (r WalletRepository) DisableWallet(walletId uuid.UUID) (res model.Wallet, err error) {
+	if err = r.db.Debug().Table("wallet").Updates(map[string]interface{}{
+		"status":      "disabled",
+		"disabled_at": time.Now(),
 	}).Where("id = ?", walletId).Error; err != nil {
 		return res, err
 	}

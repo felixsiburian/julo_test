@@ -14,14 +14,15 @@ type (
 	}
 
 	Wallet struct {
-		ID        uuid.UUID  `gorm:"id" json:"id"`
-		OwnedBy   uuid.UUID  `gorm:"owned_by" json:"owned_by"`
-		Status    string     `gorm:"status" json:"status"`
-		EnabledAt *time.Time `gorm:"enabled_at" json:"enabled_at"`
-		Balance   float64    `gorm:"balance" json:"balance"`
-		CreatedAt time.Time  `gorm:"created_at" json:"created_at"`
-		UpdatedAt time.Time  `gorm:"updated_at" json:"updated_at"`
-		DeletedAt *time.Time `gorm:"deleted_at" json:"deleted_at"`
+		ID         uuid.UUID  `gorm:"id" json:"id"`
+		OwnedBy    uuid.UUID  `gorm:"owned_by" json:"owned_by"`
+		Status     string     `gorm:"status" json:"status"`
+		EnabledAt  *time.Time `gorm:"enabled_at" json:"enabled_at"`
+		Balance    float64    `gorm:"balance" json:"balance"`
+		CreatedAt  time.Time  `gorm:"created_at" json:"created_at"`
+		UpdatedAt  time.Time  `gorm:"updated_at" json:"updated_at"`
+		DeletedAt  *time.Time `gorm:"deleted_at" json:"deleted_at"`
+		DisabledAt *time.Time `gorm:"disabled_at" json:"disabled_at"`
 	}
 
 	Transaction struct {
