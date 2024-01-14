@@ -1,0 +1,185 @@
+{
+	"info": {
+		"_postman_id": "9d5ca4af-d561-418a-a1a9-c37b81d51870",
+		"name": "Julo Test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "4760244"
+	},
+	"item": [
+		{
+			"name": "create account",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": "localhost:8080/api/v1/account"
+			},
+			"response": []
+		},
+		{
+			"name": "Find Account By ID",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "customer_xid",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": "localhost:8080/api/v1/account/find"
+			},
+			"response": []
+		},
+		{
+			"name": "Init Wallet",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "customer_xid",
+							"value": "ea0212d3-abd6-406f-8c67-868e814a2436",
+							"type": "text"
+						}
+					]
+				},
+				"url": "localhost:8080/api/v1/init"
+			},
+			"response": []
+		},
+		{
+			"name": "Enable Wallet",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token TTiJQ81m9upPuPPk1gVlbhESCx2VypvW_M_KDMe4PEwrMhYAND1SOfV2w_c8-ah3tT5cMCxU00neYi3MtFFJfg==",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": "localhost:8080/api/v1/wallet"
+			},
+			"response": []
+		},
+		{
+			"name": "View Wallet",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token TTiJQ81m9upPuPPk1gVlbhESCx2VypvW_M_KDMe4PEwrMhYAND1SOfV2w_c8-ah3tT5cMCxU00neYi3MtFFJfg==",
+						"type": "text"
+					}
+				],
+				"url": "localhost:8080/api/v1/wallet"
+			},
+			"response": []
+		},
+		{
+			"name": "View wallet transactions",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token TTiJQ81m9upPuPPk1gVlbhESCx2VypvW_M_KDMe4PEwrMhYAND1SOfV2w_c8-ah3tT5cMCxU00neYi3MtFFJfg==",
+						"type": "text"
+					}
+				],
+				"url": "localhost:8080/api/v1/wallet/transactions"
+			},
+			"response": []
+		},
+		{
+			"name": "Deposit",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token TTiJQ81m9upPuPPk1gVlbhESCx2VypvW_M_KDMe4PEwrMhYAND1SOfV2w_c8-ah3tT5cMCxU00neYi3MtFFJfg==",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "reference_id",
+							"value": "50535246-dcb2-4929-8cc9-004ea06f5241",
+							"type": "text"
+						},
+						{
+							"key": "amount",
+							"value": "20000",
+							"type": "text"
+						}
+					]
+				},
+				"url": "localhost:8080/api/v1/wallet/deposits"
+			},
+			"response": []
+		},
+		{
+			"name": "Withdrawals",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token TTiJQ81m9upPuPPk1gVlbhESCx2VypvW_M_KDMe4PEwrMhYAND1SOfV2w_c8-ah3tT5cMCxU00neYi3MtFFJfg==",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "reference_id",
+							"value": "50535246-dcb2-4929-8cc9-004ea06f5241",
+							"type": "text"
+						},
+						{
+							"key": "amount",
+							"value": "100000",
+							"type": "text"
+						}
+					]
+				},
+				"url": "localhost:8080/api/v1/wallet/withdrawals"
+			},
+			"response": []
+		},
+		{
+			"name": "Disable Wallet",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token TTiJQ81m9upPuPPk1gVlbhESCx2VypvW_M_KDMe4PEwrMhYAND1SOfV2w_c8-ah3tT5cMCxU00neYi3MtFFJfg==",
+						"type": "text"
+					}
+				],
+				"url": "localhost:8080/api/v1/wallet"
+			},
+			"response": []
+		}
+	]
+}
